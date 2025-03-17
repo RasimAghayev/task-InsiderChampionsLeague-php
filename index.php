@@ -1,23 +1,24 @@
 <?php
 
-require 'classes/Database.php';
-require 'classes/Team.php';
-require 'classes/FootballMatch.php';
-require 'classes/League.php';
+require_once 'vendor/autoload.php';
 
+use App\Application\Services\LeagueService;
+use App\Infrastructure\Repository\LeagueRepository;
+use App\Infrastructure\Repository\TeamRepository;
+use App\Infrastructure\Repository\FootballMatchRepository;
 
-$db = Database::getInstance();
-$chelsea = new Team("Chelsea", 5);
-$arsenal = new Team("Arsenal", 4);
-$manCity = new Team("Manchester City", 4);
-$liverpool = new Team("Liverpool", 3);
+$leagueRepository = new LeagueRepository();
+$teamRepository = new TeamRepository();
+$footballMatchRepository = new FootballMatchRepository();
 
-$league = new League();
-$league->addTeam($chelsea);
-$league->addTeam($arsenal);
-$league->addTeam($manCity);
-$league->addTeam($liverpool);
+$leagueService = new LeagueService($leagueRepository, $teamRepository, $footballMatchRepository);
 
+$leagueService->createLeague('Premier League');
 
-$league->playRound();
-$league->getLeagueTable();
+$leagueService->addTeam('Chelsea', 5);
+$leagueService->addTeam('Arsenal', 4);
+$leagueService->addTeam('Manchester City', 4);
+$leagueService->addTeam('Liverpool', 3);
+
+$leagueService->playRound();
+$leagueService->displayLeagueTable();
