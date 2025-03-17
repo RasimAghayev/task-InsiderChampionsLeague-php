@@ -1,3 +1,4 @@
+[![wakatime](https://wakatime.com/badge/user/d7f8cf89-fee2-46da-89df-70b82216f2c2/project/865369a2-df6a-49f2-b863-924daf5e8036.svg)](https://wakatime.com/badge/user/d7f8cf89-fee2-46da-89df-70b82216f2c2/project/865369a2-df6a-49f2-b863-924daf5e8036)
 # Insider Champions League Simulation
 
 This project simulates a football league with four teams using PHP and OOP. It generates match results, calculates the league table, and displays team statistics.
