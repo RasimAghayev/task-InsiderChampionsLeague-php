@@ -1,0 +1,30 @@
+{
+  "name": "rasimaghayev/task-insiderchampionsleague-php",
+  "description": "A football league system using domain-driven design",
+  "type": "project",
+  "require": {
+    "php": "^8.1",
+    "ext-pdo": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "App\\Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Rasim Aghayev",
+      "email": "rasimaqayev@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true
+  }
+}
