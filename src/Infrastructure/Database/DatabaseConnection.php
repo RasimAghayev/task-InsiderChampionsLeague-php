@@ -4,21 +4,16 @@ namespace App\Infrastructure\Database;
 
 class DatabaseConnection
 {
-    /**
-     * @var \App\Infrastructure\Database\DatabaseConnection|null
-     */
     private static ?self $instance = null;
-    /**
-     * @var \PDO
-     */
     private \PDO $connection;
 
     /**
-     *
+     * @param string|null $configPath
      */
-    private function __construct()
+    private function __construct(?string $configPath = null)
     {
-        $config = require __DIR__ . '/../../../config/config.php';
+        $configPath = $configPath ?? __DIR__ . '/../../../config/config.php';
+        $config = require $configPath;
         $dbConfig = $config['database'];
 
         $dsn = "{$dbConfig['driver']}:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['dbname']}";
@@ -36,16 +31,26 @@ class DatabaseConnection
     }
 
     /**
+     * @param string|null $configPath
      * @return self
      */
-    public static function getInstance(): self
+    public static function getInstance(?string $configPath = null): self
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self($configPath);
         }
         return self::$instance;
     }
 
+    /**
+     * Resets the singleton instance for testing purposes.
+     *
+     * @return void
+     */
+    public static function resetInstance(): void
+    {
+        self::$instance = null;
+    }
     /**
      * @return \PDO
      */
