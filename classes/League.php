@@ -1,23 +1,40 @@
 <?php
 class League {
-    public array $teams = [];
-    public array $matches = [];
+    public $teams = [];
+    public $matches = [];
 
-    public function addTeam($team): void
+    /**
+     * @param \Team $team
+     * @return void
+     */
+    public function addTeam( Team $team): void
     {
+        $team->save();
         $this->teams[] = $team;
     }
 
+    /**
+     * @return void
+     * @throws \Random\RandomException
+     */
     public function playRound(): void
     {
         foreach ($this->teams as $i => $iValue) {
             for ($j = $i + 1, $jMax = count($this->teams); $j < $jMax; $j++) {
                 $match = new FootballMatch($this->teams[$i], $this->teams[$j]);
                 $this->matches[] = $match;
+                $match->save();
             }
+        }
+
+        foreach ($this->teams as $team) {
+            $team->update();
         }
     }
 
+    /**
+     * @return void
+     */
     public function getLeagueTable(): void
     {
         usort($this->teams, function($a, $b) {

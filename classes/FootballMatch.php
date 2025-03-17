@@ -8,6 +8,7 @@ class FootballMatch {
     /**
      * @param $homeTeam
      * @param $awayTeam
+     * @throws \Random\RandomException
      */
     public function __construct($homeTeam, $awayTeam) {
         $this->homeTeam = $homeTeam;
@@ -17,6 +18,7 @@ class FootballMatch {
 
     /**
      * @return void
+     * @throws \Random\RandomException
      */
     private function play(): void
     {
@@ -55,5 +57,20 @@ class FootballMatch {
     private function simulateGoals($strength): int
     {
         return random_int(0, $strength);
+    }
+
+    /**
+     * @return void
+     */
+    public function save(): void
+    {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("INSERT INTO matches (home_team_id, away_team_id, home_goals, away_goals) VALUES (:home_team_id, :away_team_id, :home_goals, :away_goals)");
+        $stmt->execute([
+            'home_team_id' => $this->homeTeam->id,
+            'away_team_id' => $this->awayTeam->id,
+            'home_goals' => $this->homeGoals,
+            'away_goals' => $this->awayGoals
+        ]);
     }
 }

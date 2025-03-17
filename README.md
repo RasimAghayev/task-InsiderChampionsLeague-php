@@ -40,6 +40,7 @@ $liverpool = new Team("Liverpool", 3);
 ```
 **Create League and Add Teams**
 ```php
+$db = Database::getInstance();
 $league = new League();
 $league->addTeam($chelsea);
 $league->addTeam($arsenal);
