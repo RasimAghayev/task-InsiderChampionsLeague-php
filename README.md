@@ -53,7 +53,7 @@ $league->getLeagueTable();
 ```
 
 ## Sample Output
-```php
+```
 League Table
 | Team            | PTS | P | W | D | L | GD |
 | Chelsea         | 13  | 5 | 4 | 1 | 0 | 14 |
