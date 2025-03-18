@@ -2,10 +2,14 @@
 
 namespace App\Infrastructure\Database;
 
+use PDO;
+use PDOException;
+use RuntimeException;
+
 class DatabaseConnection
 {
     private static ?self $instance = null;
-    private \PDO $connection;
+    private PDO $connection;
 
     /**
      * @param string|null $configPath
@@ -19,14 +23,14 @@ class DatabaseConnection
         $dsn = "{$dbConfig['driver']}:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['dbname']}";
 
         try {
-            $this->connection = new \PDO(
+            $this->connection = new PDO(
                 $dsn,
                 $dbConfig['username'],
                 $dbConfig['password'],
                 $dbConfig['options']
             );
-        } catch (\PDOException $e) {
-            throw new \RuntimeException("Database connection error: " . $e->getMessage());
+        } catch (PDOException $e) {
+            throw new RuntimeException("Database connection error: " . $e->getMessage());
         }
     }
 
@@ -51,10 +55,11 @@ class DatabaseConnection
     {
         self::$instance = null;
     }
+
     /**
      * @return \PDO
      */
-    public function getConnection(): \PDO
+    public function getConnection(): PDO
     {
         return $this->connection;
     }
@@ -62,17 +67,19 @@ class DatabaseConnection
     // Prevent cloning
 
     /**
-     * @return void
-     */
-    private function __clone() {}
-
-    // Prevent unserialization
-
-    /**
      * @return mixed
      */
     public function __wakeup()
     {
-        throw new \RuntimeException("Cannot unserialize singleton");
+        throw new RuntimeException("Cannot unserialize singleton");
+    }
+
+    // Prevent unserialization
+
+    /**
+     * @return void
+     */
+    private function __clone()
+    {
     }
 }

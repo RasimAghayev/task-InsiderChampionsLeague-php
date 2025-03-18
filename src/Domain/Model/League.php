@@ -35,14 +35,6 @@ class League
     }
 
     /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
      * @param \App\Domain\Model\Team $team
      * @return void
      */
@@ -110,5 +102,13 @@ class League
         });
 
         return $sortedTeams;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

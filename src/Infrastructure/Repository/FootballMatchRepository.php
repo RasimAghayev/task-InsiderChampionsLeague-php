@@ -6,11 +6,12 @@ use App\Domain\Model\FootballMatch;
 use App\Domain\Repository\FootballMatchRepositoryInterface;
 use App\Infrastructure\Database\DatabaseConnection;
 use Override;
+use PDO;
 
 class FootballMatchRepository implements FootballMatchRepositoryInterface
 {
 
-    private \PDO $connection;
+    private PDO $connection;
 
     /**
      *
@@ -29,8 +30,8 @@ class FootballMatchRepository implements FootballMatchRepositoryInterface
         if ($match->getId() === null) {
             // Insert new match
             $stmt = $this->connection->prepare(
-                "INSERT INTO matches (home_team_id, away_team_id, home_goals, away_goals, played) 
-                 VALUES (:home_team_id, :away_team_id, :home_goals, :away_goals, :played) 
+                "INSERT INTO matches (home_team_id, away_team_id, home_goals, away_goals, played,league_id) 
+                 VALUES (:home_team_id, :away_team_id, :home_goals, :away_goals, :played, :league_id) 
                  RETURNING id"
             );
 
@@ -40,6 +41,7 @@ class FootballMatchRepository implements FootballMatchRepositoryInterface
                 'home_goals' => $match->getHomeGoals(),
                 'away_goals' => $match->getAwayGoals(),
                 'played' => $match->isPlayed(),
+                'league_id' => $match->getLeagueId(),
             ]);
 
             $match->setId($this->connection->lastInsertId());
@@ -48,7 +50,7 @@ class FootballMatchRepository implements FootballMatchRepositoryInterface
             $stmt = $this->connection->prepare(
                 "UPDATE matches 
                  SET home_team_id = :home_team_id, away_team_id = :away_team_id, 
-                     home_goals = :home_goals, away_goals = :away_goals, played = :played 
+                     home_goals = :home_goals, away_goals = :away_goals, played = :played , league_id = :league_id 
                  WHERE id = :id"
             );
 
@@ -59,33 +61,9 @@ class FootballMatchRepository implements FootballMatchRepositoryInterface
                 'home_goals' => $match->getHomeGoals(),
                 'away_goals' => $match->getAwayGoals(),
                 'played' => $match->isPlayed(),
+                'league_id' => $match->getLeagueId(),
             ]);
         }
-    }
-
-    /**
-     * @param int $id
-     * @return \App\Domain\Model\FootballMatch|null
-     */
-    #[Override] public function findById(int $id): ?FootballMatch
-    {
-        $stmt = $this->connection->prepare("SELECT * FROM matches WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        $data = $stmt->fetch();
-
-        if ($data === false) {
-            return null;
-        }
-
-        $teamRepository = new TeamRepository();
-        $homeTeam = $teamRepository->findById($data['home_team_id']);
-        $awayTeam = $teamRepository->findById($data['away_team_id']);
-
-        $match = new FootballMatch($homeTeam, $awayTeam);
-        $match->setId($data['id']);
-        $match->play($data['home_goals'], $data['away_goals']);
-
-        return $match;
     }
 
     /**
@@ -112,5 +90,36 @@ class FootballMatchRepository implements FootballMatchRepositoryInterface
         }
 
         return $matches;
+    }
+
+    /**
+     * @param int $id
+     * @return \App\Domain\Model\FootballMatch|null
+     */
+    #[Override] public function findById(int $id): ?FootballMatch
+    {
+        $stmt = $this->connection->prepare("SELECT * FROM matches WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $data = $stmt->fetch();
+
+        if ($data === false) {
+            return null;
+        }
+
+        $teamRepository = new TeamRepository();
+        $homeTeam = $teamRepository->findById($data['home_team_id']);
+        $awayTeam = $teamRepository->findById($data['away_team_id']);
+
+        $match = new FootballMatch($homeTeam, $awayTeam);
+        $match->setId($data['id']);
+        $match->play($data['home_goals'], $data['away_goals']);
+
+        return $match;
+    }
+    #[Override]
+    public function delete(FootballMatch $match): void
+    {
+        $stmt = $this->connection->prepare("DELETE FROM matches WHERE id = :id");
+        $stmt->execute(['id' => $match->getId()]);
     }
 }
