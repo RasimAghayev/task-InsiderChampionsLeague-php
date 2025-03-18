@@ -66,11 +66,29 @@ class Team
     }
 
     /**
+     * @param int $points
+     * @return void
+     */
+    public function setPoints(int $points): void
+    {
+        $this->points = $points;
+    }
+
+    /**
      * @return int
      */
     public function getPlayed(): int
     {
         return $this->played;
+    }
+
+    /**
+     * @param int $played
+     * @return void
+     */
+    public function setPlayed(int $played): void
+    {
+        $this->played = $played;
     }
 
     /**
@@ -82,11 +100,29 @@ class Team
     }
 
     /**
+     * @param int $won
+     * @return void
+     */
+    public function setWon(int $won): void
+    {
+        $this->won = $won;
+    }
+
+    /**
      * @return int
      */
     public function getDrawn(): int
     {
         return $this->drawn;
+    }
+
+    /**
+     * @param int $drawn
+     * @return void
+     */
+    public function setDrawn(int $drawn): void
+    {
+        $this->drawn = $drawn;
     }
 
     /**
@@ -98,6 +134,15 @@ class Team
     }
 
     /**
+     * @param int $lost
+     * @return void
+     */
+    public function setLost(int $lost): void
+    {
+        $this->lost = $lost;
+    }
+
+    /**
      * @return int
      */
     public function getGoalsFor(): int
@@ -106,11 +151,29 @@ class Team
     }
 
     /**
+     * @param int $goalsFor
+     * @return void
+     */
+    public function setGoalsFor(int $goalsFor): void
+    {
+        $this->goalsFor = $goalsFor;
+    }
+
+    /**
      * @return int
      */
     public function getGoalsAgainst(): int
     {
         return $this->goalsAgainst;
+    }
+
+    /**
+     * @param int $goalsAgainst
+     * @return void
+     */
+    public function setGoalsAgainst(int $goalsAgainst): void
+    {
+        $this->goalsAgainst = $goalsAgainst;
     }
 
     /**
@@ -161,5 +224,4 @@ class Team
         $this->goalsFor += $goalsFor;
         $this->goalsAgainst += $goalsAgainst;
     }
-
 }
