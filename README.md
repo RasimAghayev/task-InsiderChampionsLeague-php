@@ -63,3 +63,26 @@ League Table
 | Manchester City | 8   | 5 | 2 | 2 | 1 | 4  |
 | Liverpool       | 5   | 5 | 1 | 2 | 2 | -2 |
 ```
+
+
+## Test case
+Run test case
+```shell
+./vendor/bin/phpunit
+```
+
+**Sample Output**
+```shell
+$ ./vendor/bin/phpunit
+PHPUnit 10.5.45 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.1.9
+Configuration: ...\task-InsiderChampionsLeague\phpunit.xml
+
+...............................                                   31 / 31 (100%)
+
+Time: 00:02.804, Memory: 8.00 MB
+
+OK (31 tests, 82 assertions)
+
+```

@@ -27,7 +27,8 @@ class LeagueService
     }
 
     /**
-     * Yeni bir liqa yaradır.
+     * @param string $name
+     * @return void
      */
     public function createLeague(string $name): void
     {
@@ -37,7 +38,9 @@ class LeagueService
     }
 
     /**
-     * Liqaya yeni bir komanda əlavə edir.
+     * @param string $name
+     * @param int $strength
+     * @return void
      */
     public function addTeam(string $name, int $strength): void
     {
@@ -51,7 +54,7 @@ class LeagueService
     }
 
     /**
-     * Bir raund matç oynayır və nəticələri qeyd edir.
+     * @return void
      * @throws \Random\RandomException
      */
     public function playRound(): void
@@ -77,7 +80,7 @@ class LeagueService
     }
 
     /**
-     * Liqa cədvəlini göstərir.
+     * @return void
      */
     public function displayLeagueTable(): void
     {
