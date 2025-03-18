@@ -4,7 +4,6 @@ namespace App\Tests\Domain\Model;
 
 use App\Domain\Model\League;
 use App\Domain\Model\Team;
-use App\Domain\Model\FootballMatch;
 use PHPUnit\Framework\TestCase;
 
 class LeagueTest extends TestCase

@@ -5,6 +5,7 @@ namespace App\Tests\Domain\Model;
 use App\Domain\Model\FootballMatch;
 use App\Domain\Model\Team;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class FootballMatchTest extends TestCase
 {
@@ -45,7 +46,7 @@ class FootballMatchTest extends TestCase
         $match->play(2, 1);
 
         // Try to play the match again
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Match has already been played');
 
         $match->play(3, 2);
