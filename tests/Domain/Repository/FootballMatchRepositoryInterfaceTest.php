@@ -13,14 +13,6 @@ class FootballMatchRepositoryInterfaceTest extends TestCase
     private FootballMatchRepositoryInterface $footballMatchRepository;
 
     /**
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     */
-    #[Override] protected function setUp(): void
-    {
-        $this->footballMatchRepository = $this->createMock(FootballMatchRepositoryInterface::class);
-    }
-
-    /**
      * @return void
      */
     public function testSave(): void
@@ -81,5 +73,13 @@ class FootballMatchRepositoryInterfaceTest extends TestCase
 
         $this->assertCount(1, $matches);
         $this->assertInstanceOf(FootballMatch::class, $matches[0]);
+    }
+
+    /**
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
+    #[Override] protected function setUp(): void
+    {
+        $this->footballMatchRepository = $this->createMock(FootballMatchRepositoryInterface::class);
     }
 }

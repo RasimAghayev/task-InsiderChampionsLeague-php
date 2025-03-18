@@ -9,6 +9,7 @@ use App\Domain\Repository\FootballMatchRepositoryInterface;
 use App\Domain\Repository\LeagueRepositoryInterface;
 use App\Domain\Repository\TeamRepositoryInterface;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class LeagueServiceTest extends TestCase
 {
@@ -16,23 +17,6 @@ class LeagueServiceTest extends TestCase
     private LeagueRepositoryInterface $leagueRepository;
     private TeamRepositoryInterface $teamRepository;
     private FootballMatchRepositoryInterface $footballMatchRepository;
-
-    /**
-     * @return void
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     */
-    protected function setUp(): void
-    {
-        $this->leagueRepository = $this->createMock(LeagueRepositoryInterface::class);
-        $this->teamRepository = $this->createMock(TeamRepositoryInterface::class);
-        $this->footballMatchRepository = $this->createMock(FootballMatchRepositoryInterface::class);
-
-        $this->leagueService = new LeagueService(
-            $this->leagueRepository,
-            $this->teamRepository,
-            $this->footballMatchRepository
-        );
-    }
 
     /**
      * @return void
@@ -81,7 +65,7 @@ class LeagueServiceTest extends TestCase
      */
     public function testAddTeamWithoutLeague(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('No league created yet.');
 
         $this->leagueService->addTeam('Chelsea', 5);
@@ -113,7 +97,7 @@ class LeagueServiceTest extends TestCase
      */
     public function testPlayRoundWithoutLeague(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('No league created yet.');
 
         $this->leagueService->playRound();
@@ -143,9 +127,26 @@ class LeagueServiceTest extends TestCase
      */
     public function testDisplayLeagueTableWithoutLeague(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('No league created yet.');
 
         $this->leagueService->displayLeagueTable();
+    }
+
+    /**
+     * @return void
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
+    protected function setUp(): void
+    {
+        $this->leagueRepository = $this->createMock(LeagueRepositoryInterface::class);
+        $this->teamRepository = $this->createMock(TeamRepositoryInterface::class);
+        $this->footballMatchRepository = $this->createMock(FootballMatchRepositoryInterface::class);
+
+        $this->leagueService = new LeagueService(
+            $this->leagueRepository,
+            $this->teamRepository,
+            $this->footballMatchRepository
+        );
     }
 }

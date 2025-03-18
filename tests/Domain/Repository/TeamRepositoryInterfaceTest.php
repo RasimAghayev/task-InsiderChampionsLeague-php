@@ -13,15 +13,6 @@ class TeamRepositoryInterfaceTest extends TestCase
 
     /**
      * @return void
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     */
-    #[Override] protected function setUp(): void
-    {
-        $this->teamRepository = $this->createMock(TeamRepositoryInterface::class);
-    }
-
-    /**
-     * @return void
      */
     public function testSave(): void
     {
@@ -77,5 +68,14 @@ class TeamRepositoryInterfaceTest extends TestCase
         $this->assertCount(2, $teams);
         $this->assertInstanceOf(Team::class, $teams[0]);
         $this->assertInstanceOf(Team::class, $teams[1]);
+    }
+
+    /**
+     * @return void
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
+    #[Override] protected function setUp(): void
+    {
+        $this->teamRepository = $this->createMock(TeamRepositoryInterface::class);
     }
 }
