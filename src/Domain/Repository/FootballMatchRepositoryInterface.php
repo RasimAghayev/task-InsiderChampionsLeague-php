@@ -11,6 +11,11 @@ interface FootballMatchRepositoryInterface
      * @return void
      */
     public function save(FootballMatch $match): void;
+    /**
+     * @param \App\Domain\Model\FootballMatch $match
+     * @return void
+     */
+    public function delete(FootballMatch $match): void;
 
     /**
      * @param int $id

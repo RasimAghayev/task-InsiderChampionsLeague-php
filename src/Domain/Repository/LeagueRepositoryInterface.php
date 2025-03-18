@@ -12,10 +12,21 @@ interface LeagueRepositoryInterface
     public function save(League $league): void;
 
     /**
+     * @param \App\Domain\Model\League $league
+     * @return void
+     */
+    public function delete(League $league): void;
+
+    /**
      * @param int $id
      * @return \App\Domain\Model\League|null
      */
     public function findById(int $id): ?League;
+
+    /**
+     * @return \App\Domain\Model\League|null
+     */
+    public function findLatestLeague(): ?League;
 
     /**
      * @param string $name

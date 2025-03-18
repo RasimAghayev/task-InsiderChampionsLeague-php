@@ -2,13 +2,16 @@
 
 namespace App\Domain\Model;
 
+use RuntimeException;
+
 class FootballMatch
 {
     private ?int $id = null;
     private Team $homeTeam;
     private Team $awayTeam;
-    private int $homeGoals=0;
-    private int $awayGoals=0;
+    private int $homeGoals = 0;
+    private int $league_id = 1;
+    private int $awayGoals = 0;
     private bool $played = false;
 
     /**
@@ -79,6 +82,14 @@ class FootballMatch
     }
 
     /**
+     * @return bool
+     */
+    public function getLeagueId(): int
+    {
+        return $this->league_id;
+    }
+
+    /**
      * @param int $homeGoals
      * @param int $awayGoals
      * @return void
@@ -86,7 +97,7 @@ class FootballMatch
     public function play(int $homeGoals, int $awayGoals): void
     {
         if ($this->played) {
-            throw new \RuntimeException("Match has already been played");
+            throw new RuntimeException("Match has already been played");
         }
 
         $this->homeGoals = $homeGoals;

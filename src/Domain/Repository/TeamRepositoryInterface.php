@@ -13,6 +13,12 @@ interface TeamRepositoryInterface
     public function save(Team $team): void;
 
     /**
+     * @param \App\Domain\Model\Team $team
+     * @return void
+     */
+    public function delete(Team $team): void;
+
+    /**
      * @param int $id
      * @return \App\Domain\Model\Team|null
      */

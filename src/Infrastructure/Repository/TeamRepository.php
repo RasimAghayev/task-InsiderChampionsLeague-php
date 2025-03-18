@@ -6,10 +6,11 @@ use App\Domain\Model\Team;
 use App\Domain\Repository\TeamRepositoryInterface;
 use App\Infrastructure\Database\DatabaseConnection;
 use Override;
+use PDO;
 
 class TeamRepository implements TeamRepositoryInterface
 {
-    private \PDO $connection;
+    private PDO $connection;
 
     /**
      *
@@ -87,20 +88,6 @@ class TeamRepository implements TeamRepositoryInterface
         return $this->getTeam($data);
     }
 
-    public function findAll(): array
-    {
-        $stmt = $this->connection->query("SELECT * FROM teams");
-        $data = $stmt->fetchAll();
-
-        $teams = [];
-        foreach ($data as $teamData) {
-            $team = $this->getTeam($teamData);
-            $teams[] = $team;
-        }
-
-        return $teams;
-    }
-
     /**
      * @param mixed $data
      * @return \App\Domain\Model\Team
@@ -117,5 +104,25 @@ class TeamRepository implements TeamRepositoryInterface
         $team->setGoalsFor($data['goals_for']);
         $team->setGoalsAgainst($data['goals_against']);
         return $team;
+    }
+
+    public function findAll(): array
+    {
+        $stmt = $this->connection->query("SELECT * FROM teams");
+        $data = $stmt->fetchAll();
+
+        $teams = [];
+        foreach ($data as $teamData) {
+            $team = $this->getTeam($teamData);
+            $teams[] = $team;
+        }
+
+        return $teams;
+    }
+    #[Override]
+    public function delete(Team $team): void
+    {
+        $stmt = $this->connection->prepare("DELETE FROM teams WHERE id = :id");
+        $stmt->execute(['id' => $team->getId()]);
     }
 }
