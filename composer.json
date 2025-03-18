@@ -3,7 +3,7 @@
   "description": "A football league system using domain-driven design",
   "type": "project",
   "require": {
-    "php": "^8.1",
+    "php": "^8.3",
     "ext-pdo": "*"
   },
   "autoload": {
