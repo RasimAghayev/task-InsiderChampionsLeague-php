@@ -7,8 +7,8 @@ class FootballMatch
     private ?int $id = null;
     private Team $homeTeam;
     private Team $awayTeam;
-    private int $homeGoals;
-    private int $awayGoals;
+    private int $homeGoals=0;
+    private int $awayGoals=0;
     private bool $played = false;
 
     /**
