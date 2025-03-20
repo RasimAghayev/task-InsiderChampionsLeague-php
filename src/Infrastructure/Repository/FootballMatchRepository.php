@@ -8,10 +8,12 @@ use App\Infrastructure\Database\DatabaseConnection;
 use Override;
 use PDO;
 
-class FootballMatchRepository implements FootballMatchRepositoryInterface
+readonly class FootballMatchRepository implements FootballMatchRepositoryInterface
 {
 
     private PDO $connection;
+    private TeamRepository $teamRepository;
+    private LeagueRepository $leagueRepository;
 
     /**
      *
@@ -19,6 +21,9 @@ class FootballMatchRepository implements FootballMatchRepositoryInterface
     public function __construct()
     {
         $this->connection = DatabaseConnection::getInstance()->getConnection();
+
+        $this->teamRepository = new TeamRepository();
+        $this->leagueRepository = new LeagueRepository();
     }
 
     /**
@@ -54,7 +59,7 @@ class FootballMatchRepository implements FootballMatchRepositoryInterface
                  WHERE id = :id"
             );
 
-            $stmt->execute([
+            $stmt->execute(params: [
                 'id' => $match->getId(),
                 'home_team_id' => $match->getHomeTeam()->getId(),
                 'away_team_id' => $match->getAwayTeam()->getId(),
@@ -75,20 +80,11 @@ class FootballMatchRepository implements FootballMatchRepositoryInterface
         $stmt = $this->connection->prepare("SELECT * FROM matches WHERE league_id = :league_id");
         $stmt->execute(['league_id' => $leagueId]);
         $data = $stmt->fetchAll();
-
         $matches = [];
-        $teamRepository = new TeamRepository();
-
-        foreach ($data as $matchData) {
-            $homeTeam = $teamRepository->findById($matchData['home_team_id']);
-            $awayTeam = $teamRepository->findById($matchData['away_team_id']);
-
-            $match = new FootballMatch($homeTeam, $awayTeam);
-            $match->setId($matchData['id']);
-            $match->play($matchData['home_goals'], $matchData['away_goals']);
+        foreach ($data as $row) {
+            $match = $this->getMatch($row);
             $matches[] = $match;
         }
-
         return $matches;
     }
 
@@ -101,25 +97,48 @@ class FootballMatchRepository implements FootballMatchRepositoryInterface
         $stmt = $this->connection->prepare("SELECT * FROM matches WHERE id = :id");
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch();
-
         if ($data === false) {
             return null;
         }
-
-        $teamRepository = new TeamRepository();
-        $homeTeam = $teamRepository->findById($data['home_team_id']);
-        $awayTeam = $teamRepository->findById($data['away_team_id']);
-
-        $match = new FootballMatch($homeTeam, $awayTeam);
-        $match->setId($data['id']);
-        $match->play($data['home_goals'], $data['away_goals']);
-
-        return $match;
+        return $this->getMatch($data);
     }
+
+
+    /**
+     * Find all matches from the database.
+     *
+     * @return \App\Domain\Model\FootballMatch[]
+     */
+    #[Override]
+    public function findAll(): array
+    {
+        $stmt = $this->connection->query("SELECT * FROM matches");
+        $data = $stmt->fetchAll();
+        $matches = [];
+        foreach ($data as $row) {
+            $match = $this->getMatch($row);
+            $matches[] = $match;
+        }
+        return $matches;
+    }
+
+
     #[Override]
     public function delete(FootballMatch $match): void
     {
         $stmt = $this->connection->prepare("DELETE FROM matches WHERE id = :id");
         $stmt->execute(['id' => $match->getId()]);
     }
+
+    private function getMatch(array $row): FootballMatch
+    {
+        $homeTeam = $this->teamRepository->findById((int)$row['home_team_id']);
+        $awayTeam = $this->teamRepository->findById((int)$row['away_team_id']);
+        $match = new FootballMatch($homeTeam, $awayTeam);
+        $match->setId((int)$row['id']);
+        $match->setLeagueId((int)$row['league_id']);
+        $match->play((int)$row['home_goals'], (int)$row['away_goals']);
+        return $match;
+    }
+
 }

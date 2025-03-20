@@ -15,7 +15,8 @@ CREATE TABLE teams (
                        drawn INT DEFAULT 0,
                        lost INT DEFAULT 0,
                        goals_for INT DEFAULT 0,
-                       goals_against INT DEFAULT 0
+                       goals_against INT DEFAULT 0,
+                       league_id INT REFERENCES leagues(id)
 );
 
 DROP TABLE IF EXISTS matches;
@@ -25,6 +26,6 @@ CREATE TABLE matches (
                          away_team_id INT REFERENCES teams(id),
                          home_goals INT DEFAULT 0,
                          away_goals INT DEFAULT 0,
-                         played BOOLEAN DEFAULT FALSE,
+                         played INT DEFAULT 0,
                          league_id INT REFERENCES leagues(id)
 );

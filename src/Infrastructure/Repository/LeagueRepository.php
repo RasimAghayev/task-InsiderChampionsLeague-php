@@ -8,7 +8,7 @@ use App\Infrastructure\Database\DatabaseConnection;
 use Override;
 use PDO;
 
-class LeagueRepository implements LeagueRepositoryInterface
+readonly class LeagueRepository implements LeagueRepositoryInterface
 {
     private PDO $connection;
 
@@ -75,14 +75,10 @@ class LeagueRepository implements LeagueRepositoryInterface
     {
         $stmt = $this->connection->query("SELECT * FROM leagues ORDER BY id DESC LIMIT 1");
         $data = $stmt->fetch();
-
         if ($data === false) {
             return null;
         }
-
-        $league = new League($data['name']);
-        $league->setId($data['id']);
-        return $league;
+        return $this->extracted($data);
     }
 
     /**
@@ -106,7 +102,7 @@ class LeagueRepository implements LeagueRepositoryInterface
         }
 
         foreach ($matches as $match) {
-            $league->generateMatches();
+            $league->generateMatches($league->getId());
         }
 
         return $league;
@@ -119,29 +115,11 @@ class LeagueRepository implements LeagueRepositoryInterface
     {
         $stmt = $this->connection->query("SELECT * FROM leagues");
         $data = $stmt->fetchAll();
-
         $leagues = [];
-        $teamRepository = new TeamRepository();
-        $matchRepository = new FootballMatchRepository();
-
         foreach ($data as $leagueData) {
-            $league = new League($leagueData['name']);
-            $league->setId($leagueData['id']);
-
-            $teams = $teamRepository->findAll();
-            $matches = $matchRepository->findByLeagueId($league->getId());
-
-            foreach ($teams as $team) {
-                $league->addTeam($team);
-            }
-
-            foreach ($matches as $match) {
-                $league->generateMatches();
-            }
-
+            $league = $this->extracted($leagueData);
             $leagues[] = $league;
         }
-
         return $leagues;
     }
 
