@@ -1,4 +1,4 @@
-FROM postgres:16-alpine
+FROM postgres:17-alpine
 
 LABEL maintainer="Rasim Aghayev <rasimaqayev@gmail.com>" \
       version="1.0" \
