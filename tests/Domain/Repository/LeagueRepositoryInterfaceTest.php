@@ -13,15 +13,6 @@ class LeagueRepositoryInterfaceTest extends TestCase
 
     /**
      * @return void
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     */
-    #[Override] protected function setUp(): void
-    {
-        $this->leagueRepository = $this->createMock(LeagueRepositoryInterface::class);
-    }
-
-    /**
-     * @return void
      */
     public function testSave(): void
     {
@@ -98,5 +89,14 @@ class LeagueRepositoryInterfaceTest extends TestCase
         $this->assertCount(2, $leagues);
         $this->assertInstanceOf(League::class, $leagues[0]);
         $this->assertInstanceOf(League::class, $leagues[1]);
+    }
+
+    /**
+     * @return void
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
+    #[Override] protected function setUp(): void
+    {
+        $this->leagueRepository = $this->createMock(LeagueRepositoryInterface::class);
     }
 }

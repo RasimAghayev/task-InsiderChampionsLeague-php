@@ -8,7 +8,7 @@ use App\Infrastructure\Database\DatabaseConnection;
 use Override;
 use PDO;
 
-class TeamRepository implements TeamRepositoryInterface
+readonly class TeamRepository implements TeamRepositoryInterface
 {
     private PDO $connection;
 
@@ -29,8 +29,8 @@ class TeamRepository implements TeamRepositoryInterface
         if ($team->getId() === null) {
             // Insert new team
             $stmt = $this->connection->prepare(
-                "INSERT INTO teams (name, strength, points, played, won, drawn, lost, goals_for, goals_against) 
-                 VALUES (:name, :strength, :points, :played, :won, :drawn, :lost, :goals_for, :goals_against) 
+                "INSERT INTO teams (name, strength, points, played, won, drawn, lost, goals_for, goals_against,league_id) 
+                 VALUES (:name, :strength, :points, :played, :won, :drawn, :lost, :goals_for, :goals_against, :league_id) 
                  RETURNING id"
             );
 
@@ -44,6 +44,7 @@ class TeamRepository implements TeamRepositoryInterface
                 'lost' => $team->getLost(),
                 'goals_for' => $team->getGoalsFor(),
                 'goals_against' => $team->getGoalsAgainst(),
+                'league_id' => $team->getLeagueId(),
             ]);
 
             $team->setId($this->connection->lastInsertId());
@@ -52,7 +53,7 @@ class TeamRepository implements TeamRepositoryInterface
             $stmt = $this->connection->prepare(
                 "UPDATE teams 
                  SET name = :name, strength = :strength, points = :points, played = :played, 
-                     won = :won, drawn = :drawn, lost = :lost, goals_for = :goals_for, goals_against = :goals_against 
+                     won = :won, drawn = :drawn, lost = :lost, goals_for = :goals_for, goals_against = :goals_against , league_id = :league_id 
                  WHERE id = :id"
             );
 
@@ -67,6 +68,7 @@ class TeamRepository implements TeamRepositoryInterface
                 'lost' => $team->getLost(),
                 'goals_for' => $team->getGoalsFor(),
                 'goals_against' => $team->getGoalsAgainst(),
+                'league_id' => $team->getLeagueId(),
             ]);
         }
     }
@@ -80,11 +82,9 @@ class TeamRepository implements TeamRepositoryInterface
         $stmt = $this->connection->prepare("SELECT * FROM teams WHERE id = :id");
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch();
-
         if ($data === false) {
             return null;
         }
-
         return $this->getTeam($data);
     }
 
@@ -103,6 +103,7 @@ class TeamRepository implements TeamRepositoryInterface
         $team->setLost($data['lost']);
         $team->setGoalsFor($data['goals_for']);
         $team->setGoalsAgainst($data['goals_against']);
+        $team->setLeagueId($data['league_id']);
         return $team;
     }
 

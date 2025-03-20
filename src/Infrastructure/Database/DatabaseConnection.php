@@ -14,7 +14,7 @@ class DatabaseConnection
     /**
      * @param string|null $configPath
      */
-    private function __construct(?string $configPath = null)
+        private function __construct(?string $configPath = null)
     {
         $configPath = $configPath ?? __DIR__ . '/../../../config/config.php';
         $config = require $configPath;

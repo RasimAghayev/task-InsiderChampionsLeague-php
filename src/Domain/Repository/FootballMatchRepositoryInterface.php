@@ -24,6 +24,11 @@ interface FootballMatchRepositoryInterface
     public function findById(int $id): ?FootballMatch;
 
     /**
+     * @return array
+     */
+    public function findAll(): array;
+
+    /**
      * @param int $leagueId
      * @return array
      */

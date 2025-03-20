@@ -2,8 +2,8 @@
 
 namespace App\Application\Services;
 
-use App\Domain\Model\{League,Team,FootballMatch};
-use App\Domain\Repository\{FootballMatchRepositoryInterface,LeagueRepositoryInterface,TeamRepositoryInterface};
+use App\Domain\Model\{FootballMatch, League, Team};
+use App\Domain\Repository\{FootballMatchRepositoryInterface, LeagueRepositoryInterface, TeamRepositoryInterface};
 use RuntimeException;
 
 class LeagueService
@@ -24,9 +24,9 @@ class LeagueService
         $this->currentLeague = $this->leagueRepository->findLatestLeague();
     }
 
-    public function createLeague(string $name): void
+    public function createLeague(string $name, array $teams = null): void
     {
-        $league = new League($name);
+        $league = new League($name, $teams);
         $this->leagueRepository->save($league);
         $this->currentLeague = $league;
     }
@@ -34,6 +34,11 @@ class LeagueService
     public function getLeagueById(int $id): ?League
     {
         return $this->leagueRepository->findById($id);
+    }
+
+    public function getAllLeagues(): array
+    {
+        return $this->leagueRepository->findAll();
     }
 
     public function updateLeague(int $id, string $name): void
@@ -62,6 +67,7 @@ class LeagueService
         }
 
         $team = new Team($name, $strength);
+        $team->setLeagueId($this->currentLeague->getId());
         $this->teamRepository->save($team);
         $this->currentLeague->addTeam($team);
     }
@@ -69,6 +75,11 @@ class LeagueService
     public function getTeamById(int $id): ?Team
     {
         return $this->teamRepository->findById($id);
+    }
+
+    public function getAllTeams(): array
+    {
+        return $this->teamRepository->findAll();
     }
 
     public function updateTeam(int $id, string $name, int $strength): void
@@ -99,8 +110,9 @@ class LeagueService
         if ($homeTeam === null || $awayTeam === null) {
             throw new RuntimeException("One or both teams not found");
         }
-
         $match = new FootballMatch($homeTeam, $awayTeam);
+        $match->setLeagueId($this->currentLeague->getId());
+
         $this->footballMatchRepository->save($match);
     }
 
@@ -108,6 +120,12 @@ class LeagueService
     {
         return $this->footballMatchRepository->findById($id);
     }
+
+    public function getAllMatches(): array
+    {
+        return $this->footballMatchRepository->findAll();
+    }
+
 
     public function updateMatch(int $id, int $homeGoals, int $awayGoals): void
     {
@@ -128,6 +146,9 @@ class LeagueService
         $this->footballMatchRepository->delete($match);
     }
 
+    /**
+     * @throws \Random\RandomException
+     */
     public function generateTeamsForLeague(int $numberOfTeams): void
     {
         if ($this->currentLeague === null) {
@@ -136,22 +157,56 @@ class LeagueService
 
         for ($i = 1; $i <= $numberOfTeams; $i++) {
             $team = new Team("Team $i", random_int(50, 100));
+            $team->setLeagueId($this->currentLeague->getId());
             $this->teamRepository->save($team);
             $this->currentLeague->addTeam($team);
         }
     }
 
-    public function generateMatchesForLeague(): void
+    /**
+     * @throws \Random\RandomException
+     */
+    public function generateMatchesForLeague(int $numberOfWeeks): void
     {
         if ($this->currentLeague === null) {
             throw new RuntimeException("No league created yet.");
         }
 
         $this->currentLeague->generateMatches();
+        $this->currentLeague->simulateWeeks($numberOfWeeks);
         $matches = $this->currentLeague->getMatches();
 
         foreach ($matches as $match) {
+            $match->setLeagueId($this->currentLeague->getId());
             $this->footballMatchRepository->save($match);
         }
+    }
+
+    /**
+     * @throws \Random\RandomException
+     */
+    public function simulateWeeks(int $weeks): void
+    {
+        if ($this->currentLeague === null) {
+            throw new RuntimeException("No league created yet.");
+        }
+        $this->currentLeague->simulateWeeks($weeks);
+    }
+
+    public function getLeagueTable(): array
+    {
+        if ($this->currentLeague === null) {
+            throw new RuntimeException("No league created yet.");
+        }
+        return $this->currentLeague->getLeagueTable();
+    }
+
+
+    public function getResults(): array
+    {
+        if ($this->currentLeague === null) {
+            throw new RuntimeException("No league created yet.");
+        }
+        return $this->currentLeague->getResults();
     }
 }

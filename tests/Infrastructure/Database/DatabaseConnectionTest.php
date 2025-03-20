@@ -3,8 +3,9 @@
 namespace App\Tests\Infrastructure\Database;
 
 use App\Infrastructure\Database\DatabaseConnection;
-use PHPUnit\Framework\TestCase;
 use PDO;
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class DatabaseConnectionTest extends TestCase
 {
@@ -41,7 +42,7 @@ class DatabaseConnectionTest extends TestCase
         // Reset the singleton instance to ensure a fresh start
         DatabaseConnection::resetInstance();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessageMatches('/Database connection error/');
 
         // Attempt to create a connection with invalid configuration

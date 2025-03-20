@@ -2,16 +2,20 @@
 
 namespace App\Domain\Model;
 
-class League
+use JsonSerializable;
+
+class League implements JsonSerializable
 {
     private ?int $id = null;
     private string $name;
     private array $teams = [];
     private array $matches = [];
+    private array $results = [];
 
     /**
      * @param string $name
      */
+
     public function __construct(string $name)
     {
         $this->name = $name;
@@ -32,6 +36,23 @@ class League
     public function setId(int $id): void
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return void
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
     }
 
     /**
@@ -75,40 +96,89 @@ class League
     }
 
     /**
-     * @return Team[]
+     * @throws \Random\RandomException
      */
+    public function simulateWeeks(int $weeks): void
+    {
+        $this->results = [];
+        for ($week = 1; $week <= $weeks; $week++) {
+            foreach ($this->matches as $match) {
+                $homeStrength = $match->getHomeTeam()->getStrength();
+                $awayStrength = $match->getAwayTeam()->getStrength();
+
+                $homeGoalsMin = max(0, $homeStrength - 10);
+                $homeGoalsMax = min($homeStrength + 10, 5);
+                $awayGoalsMin = max(0, $awayStrength - 10);
+                $awayGoalsMax = min($awayStrength + 10, 5);
+
+                if ($homeGoalsMin > $homeGoalsMax) {
+                    $homeGoalsMin = $homeGoalsMax;
+                }
+                if ($awayGoalsMin > $awayGoalsMax) {
+                    $awayGoalsMin = $awayGoalsMax;
+                }
+
+                // Generate random goals within valid ranges
+                $homeGoals = random_int($homeGoalsMin, $homeGoalsMax);
+                $awayGoals = random_int($awayGoalsMin, $awayGoalsMax);
+                $match->play($homeGoals, $awayGoals);
+                $this->results[] = [
+                    'week' => $week,
+                    'match' => $match,
+                    'home_goals' => $homeGoals,
+                    'away_goals' => $awayGoals,
+                ];
+            }
+        }
+    }
+
+    public function getResults(): array
+    {
+        return $this->results;
+    }
+
     public function getLeagueTable(): array
     {
-        $sortedTeams = $this->teams;
-
-        usort($sortedTeams, static function (Team $a, Team $b) {
-            // Sort by points (descending)
-            if ($a->getPoints() !== $b->getPoints()) {
-                return $b->getPoints() - $a->getPoints();
+        usort($this->teams, static function ($a, $b) {
+            if ($a->getPoints() === $b->getPoints()) {
+                return $b->getGoalDifference() <=> $a->getGoalDifference();
             }
-
-            // If points are equal, sort by goal difference (descending)
-            if ($a->getGoalDifference() !== $b->getGoalDifference()) {
-                return $b->getGoalDifference() - $a->getGoalDifference();
-            }
-
-            // If goal difference is equal, sort by goals scored (descending)
-            if ($a->getGoalsFor() !== $b->getGoalsFor()) {
-                return $b->getGoalsFor() - $a->getGoalsFor();
-            }
-
-            // If all criteria are equal, sort alphabetically by name
-            return strcmp($a->getName(), $b->getName());
+            return $b->getPoints() <=> $a->getPoints();
         });
 
-        return $sortedTeams;
+        return array_map(static function ($team) {
+            return [
+                'name' => $team->getName(),
+                'points' => $team->getPoints(),
+                'played' => $team->getPlayed(),
+                'won' => $team->getWon(),
+                'drawn' => $team->getDrawn(),
+                'lost' => $team->getLost(),
+                'goals_for' => $team->getGoalsFor(),
+                'goals_against' => $team->getGoalsAgainst(),
+                'goal_difference' => $team->getGoalDifference(),
+            ];
+        }, $this->teams);
     }
 
     /**
-     * @return string
+     * Specify data which should be serialized to JSON.
+     *
+     * @return array
      */
-    public function getName(): string
+    public function jsonSerialize(): array
     {
-        return $this->name;
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'teams' => array_map(static function (Team $team) {
+                return $team->jsonSerialize(); // Assuming Team also implements JsonSerializable
+            }, $this->teams),
+            'matches' => array_map(static function (FootballMatch $match) {
+                return $match->jsonSerialize(); // Assuming FootballMatch also implements JsonSerializable
+            }, $this->matches),
+            'results' => $this->results,
+            'league_table' => $this->getLeagueTable(),
+        ];
     }
 }
