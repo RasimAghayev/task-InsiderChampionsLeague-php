@@ -20,9 +20,9 @@ $leagueService = new LeagueService($leagueRepository, $teamRepository, $football
 $leagueController = new LeagueController($leagueService);
 
 // Handle CORS (Cross-Origin Resource Sharing)
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+//header("Access-Control-Allow-Origin: *");
+//header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+//header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // Handle preflight request for CORS
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
